@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 import SessionWrapper from "@/lib/seasonWrapper";
+import SideBar from "./pages/components/sideBar";
 
 const geistSans = localFont({
   src: "./fonts/GeistVF.woff",
   variable: "--font-geist-sans",
   weight: "100 900",
 });
+
 const geistMono = localFont({
   src: "./fonts/GeistMonoVF.woff",
   variable: "--font-geist-mono",
@@ -26,13 +28,20 @@ export default function RootLayout({
 }>) {
   return (
     <SessionWrapper>
-    <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+      <html lang="en">
+        <body
+          className={`${geistSans.variable} ${geistMono.variable} antialiased bg-white`}
+        >
+          <div className=""> {/* Container with fixed height and hidden overflow */}
+            {/* Scrollable main content */}
+            <main className="">
+              <div className="w-full">
+              {children}
+              </div>
+            </main>
+          </div>
+        </body>
+      </html>
     </SessionWrapper>
   );
 }
