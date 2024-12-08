@@ -1,5 +1,7 @@
 import { Category } from '@/app/models/category_model';
+import { authOptions } from '@/lib/authOptions';
 import mongooseConnect from '@/lib/mongoose';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 
@@ -16,6 +18,10 @@ const handleError = (error: unknown, message: string) => {
 // GET all categories, ordered by usedCount
 export async function GET() {
   try {
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
     await mongooseConnect();
     const categories = await Category.find({})
       .sort({ usedCount: -1, name: 1 }); // Sort by usedCount (descending), then by name (ascending)
@@ -31,8 +37,8 @@ export async function POST(req: NextRequest) {
     await mongooseConnect();
     
     const body = await req.json();
-    const { name, description, parent, parentFor } = body;
-    console.log(`name: ${name}, description: ${description}, parent: ${parent}, parentFor: ${parentFor}`)
+    const { name, description, parent, parentFor, properties } = body;
+    console.log(`name: ${name}, description: ${description}, parent: ${parent}, parentFor: ${parentFor}, properties ${JSON.stringify(properties)}`)
     
     if (!name?.trim()) {
       return NextResponse.json(
@@ -61,6 +67,7 @@ export async function POST(req: NextRequest) {
       name,
       description,
       parent,
+      properties,
       parentFor: parentFor || 0,  // Default to 0 if not provided
       usedCount: 0,                // Initialize usedCount as 0
     });
@@ -80,7 +87,7 @@ export async function PUT(req: NextRequest) {
     const id = req.nextUrl.searchParams.get('id');
     await mongooseConnect();
     
-    const { name, description, parent } = await req.json();
+    const { name, description, parent,properties } = await req.json();
     
     if (!name?.trim()) {
       return NextResponse.json(
@@ -104,7 +111,7 @@ export async function PUT(req: NextRequest) {
     
     const updatedCategory = await Category.findByIdAndUpdate(
       id,
-      { name, parent, description },
+      { name, parent, description,properties },
       { new: true, runValidators: true }
     );
     

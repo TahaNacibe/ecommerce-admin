@@ -5,6 +5,9 @@ import { useEffect, useState } from "react"
 import { Search } from "lucide-react"
 import axios from "axios"
 import ProductsTable from "./components/tableOfItems"
+import ProductType from "../models/product_interface"
+import { useSession } from "next-auth/react"
+import UnauthenticatedPage from "../unauthorized/page"
 
 export default function ProductMainPage() {
 
@@ -21,7 +24,7 @@ export default function ProductMainPage() {
 
 
     {/* the state management */}
-    const [products, setProducts] = useState<Array<any> | null>(null)
+    const [products, setProducts] = useState<Array<ProductType> | null>(null)
     const [isFilter, setIsFilter] = useState(false)
     const [isExpanded, setIsExpanded] = useState(false);
     const [searchValue, setSearchValue] = useState('');
@@ -32,8 +35,10 @@ export default function ProductMainPage() {
     })
     
     useEffect(() => {
-        axios.get("api/products").then((respond) => {
+        console.log("------------> start fetching")
+        axios.get("/api/products").then((respond) => {
             if (respond) {
+                console.log("products", respond)
                 setProducts(respond.data.products)
             }
         })
@@ -168,6 +173,15 @@ export default function ProductMainPage() {
             setFilterLists(emptyData)
         }
         setIsFilter(!isFilter)
+    }
+
+    const session = useSession()
+    {/* in case of unauthenticated access break his back */ }
+    if (session.status === "loading") {
+        return 
+    }
+    if (session.status === "unauthenticated") {
+        return (<UnauthenticatedPage />)
     }
 
     return (

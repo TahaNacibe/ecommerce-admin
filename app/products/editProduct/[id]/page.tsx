@@ -6,10 +6,16 @@ import { Plus, X } from "lucide-react";
 import SideBar from "@/app/pages/components/sideBar";
 import axios from "axios";
 import { redirect, useParams } from "next/navigation";
+import AutocompleteInput from "@/app/components/tagsSelect";
+import Category from "@/app/models/category_interface";
+import imageCompression from "browser-image-compression";
+import { useSession } from "next-auth/react";
+import UnauthenticatedPage from "@/app/unauthorized/page";
 
 export default function NewProductPage() {
-
+    const session = useSession()
     const [product, setProduct] = useState<Product>()
+    const [loading, setLoading] = useState<boolean>(true)
         // Track original image URLs for comparison
         const [originalImages, setOriginalImages] = useState<{
             main: string;
@@ -18,33 +24,44 @@ export default function NewProductPage() {
     const { id } = useParams();
     
     useEffect(() => {
-        axios.get(`/api/products?id=${id}`).then((respond) => {
-            if (respond) {
-                setProduct(respond.data.product)
-                //* default value of the fields
-                setOriginalImages({
-                    main: respond.data.product.image,
-                    others: respond.data.product.other_images
-                });
-                setPreviews(respond.data.product.other_images)
-                setBigImagePreview(respond.data.product.image)
-                setFormData({
-                    title: respond.data.product?.title ?? "",
-                    description: respond.data.product?.description ?? "",
-                    quantity : respond.data.product?.quantity ?? 0,
-                    price: respond.data.product?.price ?? "0.00",
-                    productType: respond.data.product?.productType ?? "",
-                    category: respond.data.product?.category ?? [],
-                    isUnlimited: respond.data.product?.isUnlimited ?? false,
-                    other_images: respond.data.product?.other_images ?? [],
-                    image: respond.data.product?.image ?? "",
-                    tags: respond.data.product?.tags ?? [],
-                    isInDiscount: respond.data.product?.isInDiscount ?? false,
-                    discountPrice : respond.data.product?.discountPrice ?? 0,
-                    id:id as string
-                            })
-            }
-        })
+        try {
+            setLoading(true)
+            axios.get(`/api/products?id=${id}`).then((respond) => {
+                console.log("the response was ",respond.data.product?.categories)
+                if (respond) {
+                    setProduct(respond.data.product)
+                    //* default value of the fields
+                    setOriginalImages({
+                        main: respond.data.product.image,
+                        others: respond.data.product.other_images
+                    });
+                    setPreviews(respond.data.product.other_images)
+                    setBigImagePreview(respond.data.product.image)
+                    setFormData({
+                        title: respond.data.product?.title ?? "",
+                        description: respond.data.product?.description ?? "",
+                        quantity : respond.data.product?.quantity ?? 0,
+                        price: respond.data.product?.price ?? "0.00",
+                        productType: respond.data.product?.productType ?? "",
+                        categories: respond.data.product?.categories ?? [],
+                        isUnlimited: respond.data.product?.isUnlimited ?? false,
+                        other_images: respond.data.product?.other_images ?? [],
+                        image: respond.data.product?.image ?? "",
+                        tags: respond.data.product?.tags ?? [],
+                        isInDiscount: respond.data.product?.isInDiscount ?? false,
+                        discountPrice : respond.data.product?.discountPrice ?? 0,
+                        id:id as string
+                    })
+                    console.log("the response was ", formData)
+                    setLoading(false)
+                }
+            })
+        } catch (error) {
+            console.error("error")
+        } finally {
+            
+        }
+        
     },[])
 
     //* const 
@@ -54,7 +71,7 @@ export default function NewProductPage() {
         quantity: number;
         price: string;
         productType: string;
-        category: string[]; 
+        categories: Category[]; 
         discountPrice: number,
         tags: string[]; 
         isInDiscount: boolean;
@@ -72,7 +89,7 @@ export default function NewProductPage() {
         quantity : 0,
         price: '',
         productType: '',
-        category: [],
+        categories: [],
         isUnlimited: false,
         other_images: [],
         image: "",
@@ -148,6 +165,15 @@ export default function NewProductPage() {
         }));
     };
 
+    //* switch the product categories  
+    const handleProductCategoriesChange = (categoriesList: any) => {
+        console.log("-------> new categories are --W>", categoriesList)
+        setFormData(prev => ({
+            ...prev,
+            categories: categoriesList
+        }));
+    };
+
     //* switch the limited state
     const handleLimitButton = (e: any) => {
         e.preventDefault()
@@ -183,7 +209,8 @@ export default function NewProductPage() {
     };
 
     // Modified addProduct function to ensure proper data flow
-const updateProduct = async (e: React.FormEvent) => {
+    const updateProduct = async (e: React.FormEvent) => {
+    console.log("000000000000000000>",formData.categories)
     e.preventDefault();
     
     if (formData.title === "" || formData.price === "") {
@@ -195,7 +222,7 @@ const updateProduct = async (e: React.FormEvent) => {
     try {
         // Get the updated form data with images
         const updatedFormData = await handleUpload();
-        
+        console.log("we are on the ")
         console.log('Sending to products API:', updatedFormData ?? formData);
         
         // Use the updated form data for creating the product
@@ -322,60 +349,87 @@ const updateProduct = async (e: React.FormEvent) => {
         
         const handleUpload = async () => {
             try {
-                let mainImageUrl = formData.image;
+                let mainImageUrl : string | null = null;
+                console.log("the big image path should be ", bigImage)
                 let otherImageUrls = [...images];
     
                 // Only upload new main image if it was changed
                 if (mainImageChanged && bigImage) {
+                    console.log("and that should print")
+                    const compressedMainImage = await imageCompression(bigImage, {
+                        maxSizeMB: 1, // Max size in MB
+                        maxWidthOrHeight: 1024, // Max width or height in pixels
+                      });
                     const mainImageBase64 = await new Promise<string>((resolve, reject) => {
                         const reader = new FileReader();
                         reader.onloadend = () => resolve(reader.result as string);
                         reader.onerror = () => reject('Error reading main image file');
-                        reader.readAsDataURL(bigImage);
+                        reader.readAsDataURL(compressedMainImage);
                     });
-    
+
+                    console.log("that should say true")
                     const mainImageResponse = await axios.post('/api/uploadImage', {
                         image: mainImageBase64
                     });
                     mainImageUrl = mainImageResponse.data.mainImageUrl;
+                    console.log("mainImageUrl = ", mainImageUrl)
                 }
     
-                // Handle swapped images
-                console.log("-------------------------->", images)
+                console.log("-------------------------->", images);
+
                 if (images && images.length > 0) {
+                    console.log("--------------> to the work");
+                
+                    // If images are already URLs, don't convert to Base64, just send them directly
                     const swappedImagesBase64 = await Promise.all(
-                        images.map(async (change, index) => {
-                            return new Promise<string>((resolve, reject) => {
-                                const reader = new FileReader();
-                                reader.onloadend = () => resolve(
-                                    reader.result as string
-                                );
-                                reader.onerror = reject;
-                                reader.readAsDataURL(change);
-                            });
+                        images.map(async (imagePath) => {
+                            // Check if the imagePath is a URL or a File object
+                            if (imagePath instanceof File) {
+                                // If it's a file, convert it to Base64
+                                return new Promise<string>((resolve, reject) => {
+                                    const reader = new FileReader();
+                                    reader.onloadend = () => resolve(reader.result as string);
+                                    reader.onerror = reject;
+                                    reader.readAsDataURL(imagePath);
+                                });
+                            } else {
+                                // If it's already a URL, just return the URL
+                                return imagePath;
+                            }
                         })
                     );
-                    console.log("---> images ->", swappedImagesBase64)
+                
+                    console.log("---> swappedImagesBase64 ->", swappedImagesBase64);
+                
                     const swappedResponse = await axios.post('/api/uploadImage', {
                         other_images: swappedImagesBase64
-                    });
-                    console.log("--------------> swaped data ----->",swappedResponse.data.otherImageUrls)
+                    },{timeout: 600000000});
+                
+                    console.log("--------------> swapped data ----->", swappedResponse.data.otherImageUrls);
+                
                     // Update URLs for swapped images
-                    const urls = previews.filter(url => url.includes("https://res.cloudinary.com/dysc6ntvh/image/upload/"))
-                    const newList = [...urls, ...swappedResponse.data.otherImageUrls]
-                    console.log("-------------> the new data --------->", newList)
-                    setImages(newList)
-                    setFormData((prevFormData : any) => ({
+                    const urls = previews.filter((url) => url.includes("https://res.cloudinary.com/dysc6ntvh/image/upload/"));
+                    otherImageUrls = [...urls, ...swappedResponse.data.otherImageUrls];
+                
+                    console.log("-------------> the new data --------->", otherImageUrls);
+                
+                    setImages(otherImageUrls);
+                    setFormData((prevFormData: any) => ({
                         ...prevFormData,
-                        other_images: newList
+                        other_images: otherImageUrls
                     }));
-                    // Return updated form data
-                    return {
-                        ...formData,
-                        image: mainImageUrl,
-                        other_images: newList
-                    };
                 }
+                
+                setFormData((prevFormData : any) => ({
+                    ...prevFormData,
+                    image: mainImageUrl ?? prevFormData.image,
+                    other_images: otherImageUrls ?? prevFormData.other_images
+                }));
+                return ({
+                    ...formData,
+                    image: mainImageUrl ?? formData.image,
+                    other_images: otherImageUrls ?? formData.other_images
+                });
     
     
             } catch (error) {
@@ -388,6 +442,18 @@ const updateProduct = async (e: React.FormEvent) => {
       //* return to the product page if created
     if (isCreated) {
         return redirect("/products");
+    }
+
+    if (loading) {
+        return (<div></div>)
+    }
+
+    {/* in case of unauthenticated access break his back */ }
+    if (session.status === "loading") {
+        return 
+    }
+    if (session.status === "unauthenticated") {
+        return (<UnauthenticatedPage />)
     }
 
     {/* the ui tree */}
@@ -689,7 +755,12 @@ const updateProduct = async (e: React.FormEvent) => {
                                 {!formData.isInDiscount? "Set Discount" : "remove Discount"}
                             </button>
                         </div>
-                </div>
+
+                        {/* the categories section */}
+                        <AutocompleteInput alreadyDefinedCategories={formData.categories} isEdit={true} response={(categoriesSelected: any) => handleProductCategoriesChange(categoriesSelected)} />
+                        
+                    
+                    </div>
 
                     
                 {/* Mobile Submit Button - Fixed at bottom */}

@@ -13,6 +13,7 @@ import {
 import Link from 'next/link';
 import axios from 'axios';
 import ProductType from '@/app/models/product_interface';
+import Category from '@/app/models/category_interface';
 
 
 interface FilterListInterFace{
@@ -155,17 +156,13 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
   };
 
   // AdditionalImages Component - simplified with better empty state handling
-  const AdditionalImages = ({ images, title }: { images: string[], title: string }) => {
+  const AdditionalImages = ({ images, title, categories }: { images: string[], title: string, categories: Category[] }) => {
     const MAX_IMAGES = 5;
     const displayImages = images.slice(0, MAX_IMAGES);
     const remainingCount = images.length - MAX_IMAGES;
 
     return (
       <div className="bg-gray-50 rounded-lg p-4">
-        <h4 className="text-sm font-medium text-gray-900 mb-3 flex items-center">
-          <ImagePlus className="w-4 h-4 mr-2" />
-          Additional Images
-        </h4>
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3 w-3/4 md:w-full">
           {displayImages.length > 0 ? (
             <>
@@ -184,7 +181,11 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
               )}
             </>
           ) : (
-            <div className="text-sm text-gray-500">No additional images available</div>
+              <div className="text-sm text-black">
+                <h1 className="">
+                No additional images available
+                </h1>
+            </div>
           )}
         </div>
       </div>
@@ -266,14 +267,14 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
                           {product.description}
                         </p>
                         <div className="flex flex-wrap gap-1">
-                          {(product.category ?? []).slice(0, 2).map((cat, i) => (
+                          {(product.categories ?? []).slice(0, 2).map((cat, i) => (
                             <span key={i} className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              {cat}
+                              {cat.name}
                             </span>
                           ))}
-                          {(product.category ?? []).length > 2 && (
+                          {(product.categories ?? []).length > 2 && (
                             <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
-                              +{product.category.length - 2}
+                              +{product.categories.length - 2}
                             </span>
                           )}
                         </div>
@@ -311,9 +312,9 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
                                 <dt className="text-gray-500">Categories:</dt>
                                 <dd className="text-gray-900">
                                   <div className="flex flex-wrap gap-1">
-                                    {(product.category ?? []).map((cat, i) => (
+                                    {(product.categories ?? []).map((cat, i) => (
                                       <span key={i} className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                                        {cat}
+                                        {cat.name}
                                       </span>
                                     ))}
                                   </div>
@@ -364,12 +365,13 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
                             </div>
                           </div>
 
-                          {product.other_images.length > 0 && (
+                          {
                             <AdditionalImages 
                               images={product.other_images}
+                              categories={product.categories}
                               title={product.title}
                             />
-                          )}
+                          }
                         </div>
                       </td>
                     </tr>

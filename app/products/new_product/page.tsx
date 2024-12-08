@@ -6,6 +6,9 @@ import { Plus, X } from "lucide-react";
 import SideBar from "@/app/pages/components/sideBar";
 import axios from "axios";
 import { redirect } from "next/navigation";
+import AutocompleteInput from "@/app/components/tagsSelect";
+import { useSession } from "next-auth/react";
+import UnauthenticatedPage from "@/app/unauthorized/page";
 
 export default function NewProductPage() {
 
@@ -18,7 +21,7 @@ export default function NewProductPage() {
         productType: string;
         isInDiscount: boolean;
         discountPrice: number;
-        category: string[]; 
+        categories: string[]; 
         tags: string[]; 
         other_images: string[];
         image: string;
@@ -33,7 +36,7 @@ export default function NewProductPage() {
         quantity : 0,
         price: '',
         productType: '',
-        category: [],
+        categories: [],
         isUnlimited: false,
         other_images: [],
         image: "",
@@ -127,8 +130,7 @@ const addProduct = async (e: React.FormEvent) => {
     setLoadingState(true);
     try {
         // Get the updated form data with images
-        const updatedFormData = await handleUpload();
-        
+        let updatedFormData = await handleUpload();
         console.log('Sending to products API:', updatedFormData);
         
         // Use the updated form data for creating the product
@@ -267,6 +269,7 @@ const addProduct = async (e: React.FormEvent) => {
     
             // Return a promise that resolves with the new form data
             return new Promise((resolve) => {
+                console.log("----------> form data -------->",formData)
                 setFormData((prev) => {
                     const newFormData = {
                         ...prev,
@@ -284,11 +287,29 @@ const addProduct = async (e: React.FormEvent) => {
             throw error instanceof Error ? error : new Error('Failed to upload images');
         }
     };
+
+        //* switch the product categories  
+        const handleProductCategoriesChange = (categoriesList: any) => {
+            console.log("-------> new categories are --W>", categoriesList)
+            setFormData(prev => ({
+                ...prev,
+                categories: categoriesList
+            }));
+        };
     
 
       //* return to the product page if created
     if (isCreated) {
         return redirect("/products");
+    }
+
+    const session = useSession()
+    {/* in case of unauthenticated access break his back */ }
+    if (session.status === "loading") {
+        return 
+    }
+    if (session.status === "unauthenticated") {
+        return (<UnauthenticatedPage />)
     }
 
     {/* the ui tree */}
@@ -596,6 +617,9 @@ const addProduct = async (e: React.FormEvent) => {
                                 {!formData.isInDiscount? "Set Discount" : "remove Discount"}
                             </button>
                         </div>
+                                                {/* the categories section */}
+                                                <AutocompleteInput alreadyDefinedCategories={[]} isEdit={false} response={(categoriesSelected: any) => handleProductCategoriesChange(categoriesSelected)} />
+
                 </div>
 
                     

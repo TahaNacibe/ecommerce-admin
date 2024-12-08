@@ -1,9 +1,10 @@
 "use client"
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { ChevronFirst, ChevronLast } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 
 export default function SideBar() {
     {/* vars for managing ui state and other */}
@@ -12,6 +13,7 @@ export default function SideBar() {
 
     {/* get current rout */}
     const pathname = usePathname();
+    const router = useRouter()
 
     {/* get current user */}
     const { data: session } = useSession();
@@ -83,6 +85,15 @@ export default function SideBar() {
                     <path strokeLinecap="round" strokeLinejoin="round" d="M4.867 19.125h.008v.008h-.008v-.008Z" />
                 </svg>
             )
+        },
+        {
+            href: "/?sign_out",
+            label: "LogOut",
+            icon: (
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 9V5.25A2.25 2.25 0 0 1 10.5 3h6a2.25 2.25 0 0 1 2.25 2.25v13.5A2.25 2.25 0 0 1 16.5 21h-6a2.25 2.25 0 0 1-2.25-2.25V15m-3 0-3-3m0 0 3-3m-3 3H15" />
+                </svg>
+            )
         }
     ];
 
@@ -90,6 +101,44 @@ export default function SideBar() {
     const GetIconForSidebar = () => {
         return (isFolded? 
         <ChevronLast /> : <ChevronFirst />)
+    }
+
+    {/* apply the change on click on bar item and log out if it's log out */ }
+    const onItemClicked = () => {
+        setIsOpen(false)
+    }
+
+    {/* side bar tab item */ }
+    const SideBarTabItem = ({item, index} : {item : any, index: number}) => {
+        if (item.label == "LogOut") {
+            return (
+                <Link
+                    href={""}
+                key={`${item.href} - ${index}`}
+                className={pathname === item.href ? activeStyle : inactiveStyle}
+                    onClick={() => {
+                        {/* sign user out and redirect to base path */}
+                        signOut({ callbackUrl: '/' })
+                }}
+            >
+                {item.icon}
+                <span className={`truncate whitespace-nowrap transition-all duration-500 ${isFolded? "opacity-0 max-w-0" : "opacity-100 max-w-full"}`}>{item.label}</span>
+            </Link>
+            )
+        } else {
+            
+            return (
+                <Link
+                key={`${item.href} - ${index}`}
+                href={item.href}
+                className={pathname === item.href ? activeStyle : inactiveStyle}
+                onClick={() => onItemClicked()}
+            >
+                {item.icon}
+                <span className={`truncate whitespace-nowrap transition-all duration-500 ${isFolded? "opacity-0 max-w-0" : "opacity-100 max-w-full"}`}>{item.label}</span>
+            </Link>
+            )
+        }
     }
 
     {/* display in case user signed in */}
@@ -116,8 +165,8 @@ export default function SideBar() {
 
             {/* Sidebar */}
             <nav className={`fixed lg:static top-0 flex flex-col left-0 z-40 h-screen bg-white text-black border-r-2 ease-in-out
-                ${isOpen ? 'w-64 translate-x-0' : '-translate-x-full lg:translate-x-0'} 
-                 transition-all duration-500 ${isFolded? "lg:w-16" : "lg:w-1/6"}`}
+                ${isOpen ? ' translate-x-0' : '-translate-x-full lg:translate-x-0'} 
+                 transition-all duration-500 ${isFolded? "lg:w-16 w-16" : "lg:w-1/6 w-1/2"}`}
             >
 
                 {/* User Profile */}
@@ -141,22 +190,14 @@ export default function SideBar() {
 
                 {/* Navigation Links */}
                 <div className="h-[80%]">
-                    {navItems.map((item) => (
-                        <Link
-                            key={item.href}
-                            href={item.href}
-                            className={pathname === item.href ? activeStyle : inactiveStyle}
-                            onClick={() => setIsOpen(false)}
-                        >
-                            {item.icon}
-                            <span className={`truncate whitespace-nowrap transition-all duration-500 ${isFolded? "opacity-0 max-w-0" : "opacity-100 max-w-full"}`}>{item.label}</span>
-                        </Link>
+                    {navItems.map((item, index) => (
+                        <SideBarTabItem key={`${index}`} item={item} index={index} />
                     ))}
                 </div>
 
                 {/* fold button */}
                 <div className="cg px-4 py-4 flex items-center gap-3 bg-gray-400/5">
-                    <button onClick={() => setFolded(!isFolded)}>
+                <button onClick={() => setFolded(!isFolded)}>
                     <GetIconForSidebar />
                     </button>
 

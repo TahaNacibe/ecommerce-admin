@@ -1,5 +1,7 @@
 import { Product } from '@/app/models/products_model';
+import { authOptions } from '@/lib/authOptions';
 import mongooseConnect from '@/lib/mongoose';
+import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
 
 async function POST(req: NextRequest) {
@@ -15,7 +17,7 @@ async function POST(req: NextRequest) {
       price,
       productType,
       quantity,
-      category,
+      categories,
       tags,
       other_images,
       image,
@@ -42,7 +44,7 @@ async function POST(req: NextRequest) {
       productType,
       discountPrice,
       isInDiscount,
-      category,
+      categories,
       tags,
       other_images,
       image,
@@ -78,7 +80,7 @@ async function PUT(req: NextRequest) {
       discountPrice,
       isInDiscount,
       quantity,
-      category,
+      categories,
       tags,
       other_images,
       id,
@@ -97,6 +99,7 @@ async function PUT(req: NextRequest) {
     }
 
     // Create a new product document
+    console.log("---------> categories -------->", categories)
     const productDoc = await Product.findByIdAndUpdate(id,{
       title,
       description,
@@ -105,14 +108,13 @@ async function PUT(req: NextRequest) {
       isInDiscount,
       price,
       productType,
-      category,
+      categories,
       quantity,
       tags,
       other_images,
       image,
       isUnlimited
     });
-
     // Respond with success
     return NextResponse.json(
       { message: 'Product updated successfully', product: productDoc },
@@ -132,6 +134,12 @@ async function PUT(req: NextRequest) {
 
 async function GET(req: NextRequest) {
   try {
+    //* check if Unauthorized before getting the data
+    const session = await getServerSession(authOptions);
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+    //* getting the actual data
     await mongooseConnect();  // Make sure the database is connected
 
     const id = req.nextUrl.searchParams.get('id');
@@ -140,8 +148,8 @@ async function GET(req: NextRequest) {
       return NextResponse.json({ message: 'Products fetched successfully', product }, { status: 200 });
     } else {
       // Fetch all products from the database
-      const products = await Product.find();
-
+      const products = await Product.find().populate('categories');
+      console.log("-------------> api response ---------> ", products)
       // Return the products in the response
       return NextResponse.json({ message: 'Products fetched successfully', products }, { status: 200 });
     }
