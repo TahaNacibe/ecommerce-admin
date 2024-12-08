@@ -28,7 +28,6 @@ async function GET(req: NextRequest) {
             { name: 1, email: 1, image: 1 } // Fetch relevant fields
         );
 
-        console.log("users are", usersData)
 
         // Merge data: Add the role information from UserProfile to the user data
         const result = usersData.map((user : any) => {
@@ -75,8 +74,6 @@ async function PUT(req: NextRequest, res: any) {
         await mongoose.connect(process.env.MONGODB_URI!);
       }
   
-      console.log("The email is:", email);
-      console.log("Role is:", role);
   
       // Find the user by email and update the role
       const updatedUser = await UserProfile.findOneAndUpdate(

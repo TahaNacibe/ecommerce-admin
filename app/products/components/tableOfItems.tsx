@@ -42,7 +42,6 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
       // Filter logic
       if (filters.count.length > 0 || filters.type.length > 0 || filters.discount.includes("elem") ) {
         filteredList = filteredList.filter((product) => {
-          console.log(filters.discount.includes("elem") && product.isInDiscount)
           const matchesType =
            filters.type.length === 0 || filters.type.includes(product.productType);
            const discountMatch = filters.discount.length === 0  || filters.discount.includes("elem") && product.isInDiscount;

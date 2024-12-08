@@ -131,7 +131,6 @@ const addProduct = async (e: React.FormEvent) => {
     try {
         // Get the updated form data with images
         let updatedFormData = await handleUpload();
-        console.log('Sending to products API:', updatedFormData);
         
         // Use the updated form data for creating the product
         const response = await axios.post("/api/products", updatedFormData);
@@ -226,7 +225,6 @@ const addProduct = async (e: React.FormEvent) => {
             
             // Check if images exists and is not empty
             if (images && images.length > 0) {
-                console.log('Number of additional images:', images.length);
                 
                 if (images.length > 5) {
                     throw new Error('Maximum 5 additional images allowed');
@@ -245,14 +243,7 @@ const addProduct = async (e: React.FormEvent) => {
                     )
                 );
                 
-                console.log('Converted additional images:', additionalImagesBase64.length);
             }
-    
-            // Log the request payload for debugging
-            console.log('Sending to upload API:', {
-                hasMainImage: !!mainImageBase64,
-                numberOfAdditionalImages: additionalImagesBase64.length
-            });
     
             // Make a single request with both main image and additional images
             const response = await axios.post('/api/uploadImage', {
@@ -260,7 +251,6 @@ const addProduct = async (e: React.FormEvent) => {
                 other_images: additionalImagesBase64
             });
     
-            console.log('Upload API response:', response.data);
     
             const { mainImageUrl, otherImageUrls } = response.data;
     
@@ -269,14 +259,12 @@ const addProduct = async (e: React.FormEvent) => {
     
             // Return a promise that resolves with the new form data
             return new Promise((resolve) => {
-                console.log("----------> form data -------->",formData)
                 setFormData((prev) => {
                     const newFormData = {
                         ...prev,
                         image: mainImageUrl,
                         other_images: safeOtherImageUrls, // Use the safe array
                     };
-                    console.log('Updated form data:', newFormData);
                     resolve(newFormData);
                     return newFormData;
                 });
@@ -290,7 +278,6 @@ const addProduct = async (e: React.FormEvent) => {
 
         //* switch the product categories  
         const handleProductCategoriesChange = (categoriesList: any) => {
-            console.log("-------> new categories are --W>", categoriesList)
             setFormData(prev => ({
                 ...prev,
                 categories: categoriesList

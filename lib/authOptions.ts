@@ -28,7 +28,6 @@ export const authOptions: NextAuthOptions = {
         signIn: async ({ account, user }) => {
             await mongooseConnect()
             const userRef = await UserProfile.findOne({ email: user.email })
-            console.log("the user ref is", userRef)
             if (user.email && (userRef.role === "admin" || userRef.role === "sub-admin" )) {
                 return true
             } else {

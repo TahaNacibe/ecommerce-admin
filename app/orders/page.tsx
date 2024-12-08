@@ -42,7 +42,6 @@ export default function OrderMainPage() {
         const getOrdersForTheAdmin = async () => {
             const response = await axios.get("/api/orders")
             setOrdersData(response.data.orders)
-            console.log("orders", response.data.orders)
         }
 
         getOrdersForTheAdmin()

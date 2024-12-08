@@ -11,7 +11,6 @@ cloudinary.config({
 export async function POST(req: NextRequest) {
   try {
     let mainImageUpload;
-    console.log("---------------> that should print")
     // Get the images from the request body
     const { image, other_images } = await req.json();
     if (image) {
@@ -24,11 +23,9 @@ export async function POST(req: NextRequest) {
 
 
 
-    console.log("------------> that also should print")
     // Handle other images if they exist
     let otherImageUrls: string[] = [];
     if (other_images && Array.isArray(other_images)) {
-      console.log("--------------> that should print for real")
       // Upload all other images concurrently
       const uploadPromises = other_images.map(img => 
         cloudinary.uploader.upload(img, {

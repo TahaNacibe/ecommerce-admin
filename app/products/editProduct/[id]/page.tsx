@@ -27,7 +27,6 @@ export default function NewProductPage() {
         try {
             setLoading(true)
             axios.get(`/api/products?id=${id}`).then((respond) => {
-                console.log("the response was ",respond.data.product?.categories)
                 if (respond) {
                     setProduct(respond.data.product)
                     //* default value of the fields
@@ -52,7 +51,6 @@ export default function NewProductPage() {
                         discountPrice : respond.data.product?.discountPrice ?? 0,
                         id:id as string
                     })
-                    console.log("the response was ", formData)
                     setLoading(false)
                 }
             })
@@ -127,10 +125,8 @@ export default function NewProductPage() {
 
     //* Form field handlers
     const handleInputChange = (field: string, value: string) => {
-        console.log("-------------> edited")
         //* set the amount to unlimited if it set to 0
         if (field === "quantity" && value != "0"){
-            console.log("--------------> man i wish i was here",Number(value))
             //* update whole data
             setFormData(prev => ({
                 ...prev,
@@ -139,7 +135,6 @@ export default function NewProductPage() {
             }));
             
         } else if (field === "discountPrice" && value != "0"  && value != ""){
-        console.log("--------------> man i wish i was here",Number(value))
         //* update whole data
         setFormData(prev => ({
             ...prev,
@@ -147,7 +142,6 @@ export default function NewProductPage() {
         }));
         
         } {
-            console.log("--------------> man i wish i was here",field)
             //* update whole data
             setFormData(prev => ({
                 ...prev,
@@ -167,7 +161,6 @@ export default function NewProductPage() {
 
     //* switch the product categories  
     const handleProductCategoriesChange = (categoriesList: any) => {
-        console.log("-------> new categories are --W>", categoriesList)
         setFormData(prev => ({
             ...prev,
             categories: categoriesList
@@ -210,7 +203,6 @@ export default function NewProductPage() {
 
     // Modified addProduct function to ensure proper data flow
     const updateProduct = async (e: React.FormEvent) => {
-    console.log("000000000000000000>",formData.categories)
     e.preventDefault();
     
     if (formData.title === "" || formData.price === "") {
@@ -222,8 +214,6 @@ export default function NewProductPage() {
     try {
         // Get the updated form data with images
         const updatedFormData = await handleUpload();
-        console.log("we are on the ")
-        console.log('Sending to products API:', updatedFormData ?? formData);
         
         // Use the updated form data for creating the product
         const response = await axios.put("/api/products", {...(updatedFormData ?? formData)});
@@ -299,8 +289,6 @@ export default function NewProductPage() {
             if (e.target.files) {
                 const selectedFiles = Array.from(e.target.files);
                 setImages(selectedFiles)
-                console.log(selectedFiles)
-                console.log(previews)
         
                 if (selectedFiles.length + previews.length > MAX_IMAGES) {
                     setErrorStack(`You can only upload up to ${MAX_IMAGES} images.`);
@@ -350,12 +338,10 @@ export default function NewProductPage() {
         const handleUpload = async () => {
             try {
                 let mainImageUrl : string | null = null;
-                console.log("the big image path should be ", bigImage)
                 let otherImageUrls = [...images];
     
                 // Only upload new main image if it was changed
                 if (mainImageChanged && bigImage) {
-                    console.log("and that should print")
                     const compressedMainImage = await imageCompression(bigImage, {
                         maxSizeMB: 1, // Max size in MB
                         maxWidthOrHeight: 1024, // Max width or height in pixels
@@ -367,19 +353,14 @@ export default function NewProductPage() {
                         reader.readAsDataURL(compressedMainImage);
                     });
 
-                    console.log("that should say true")
                     const mainImageResponse = await axios.post('/api/uploadImage', {
                         image: mainImageBase64
                     });
                     mainImageUrl = mainImageResponse.data.mainImageUrl;
-                    console.log("mainImageUrl = ", mainImageUrl)
                 }
     
-                console.log("-------------------------->", images);
 
-                if (images && images.length > 0) {
-                    console.log("--------------> to the work");
-                
+                if (images && images.length > 0) {                
                     // If images are already URLs, don't convert to Base64, just send them directly
                     const swappedImagesBase64 = await Promise.all(
                         images.map(async (imagePath) => {
@@ -399,19 +380,16 @@ export default function NewProductPage() {
                         })
                     );
                 
-                    console.log("---> swappedImagesBase64 ->", swappedImagesBase64);
                 
                     const swappedResponse = await axios.post('/api/uploadImage', {
                         other_images: swappedImagesBase64
                     },{timeout: 600000000});
                 
-                    console.log("--------------> swapped data ----->", swappedResponse.data.otherImageUrls);
                 
                     // Update URLs for swapped images
                     const urls = previews.filter((url) => url.includes("https://res.cloudinary.com/dysc6ntvh/image/upload/"));
                     otherImageUrls = [...urls, ...swappedResponse.data.otherImageUrls];
                 
-                    console.log("-------------> the new data --------->", otherImageUrls);
                 
                     setImages(otherImageUrls);
                     setFormData((prevFormData: any) => ({

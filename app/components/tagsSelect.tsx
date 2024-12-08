@@ -72,14 +72,11 @@ const AutocompleteInput = ({
   }, [inputValue, categories]);
 
   const handleSelect = (item: Category) => {
-    console.log("okay")
     if (!selectedItems.some((elem) => elem._id === item._id)) {
-      console.log("that's wierd")
       setSelectedItems((prev) => [...prev, item]);
     }
     setInputValue("");
     response([...selectedItems, item]);
-    console.log("the current list should be:",[...selectedItems, item] )
     setIsDropdownVisible(false);
   };
 

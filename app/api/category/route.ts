@@ -38,7 +38,6 @@ export async function POST(req: NextRequest) {
     
     const body = await req.json();
     const { name, description, parent, parentFor, properties } = body;
-    console.log(`name: ${name}, description: ${description}, parent: ${parent}, parentFor: ${parentFor}, properties ${JSON.stringify(properties)}`)
     
     if (!name?.trim()) {
       return NextResponse.json(

@@ -26,7 +26,6 @@ async function GET(req: NextRequest) {
             { name: 1, email: 1, image: 1, _id: 1 } // Fetch relevant fields
         ).lean(); // .lean() for performance optimization
 
-        console.log("users are", usersData);
 
         // Merge data: Add the role information from UserProfile to the user data
         const result = usersData.map((user: any) => {

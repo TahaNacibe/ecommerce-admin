@@ -23,9 +23,6 @@ async function POST(req: NextRequest) {
       image,
       isUnlimited, } = await req.json();
     
-    // Log the incoming data for debugging
-    console.log(title, description, price);
-
     // Check if required fields are provided
     if (!title || !price) {
       return NextResponse.json(
@@ -70,7 +67,6 @@ async function PUT(req: NextRequest) {
   try {
     // Ensure the connection to the database is established
     await mongooseConnect();
-    console.log("-------------> here we are")
     // Parse the request body
     const { title,
       description,
@@ -86,9 +82,6 @@ async function PUT(req: NextRequest) {
       id,
       image,
       isUnlimited, } = await req.json();
-    console.log("-------------> images ---------->", other_images)
-    // Log the incoming data for debugging
-    console.log(title, description, price);
 
     // Check if required fields are provided
     if (!title || !price) {
@@ -99,7 +92,6 @@ async function PUT(req: NextRequest) {
     }
 
     // Create a new product document
-    console.log("---------> categories -------->", categories)
     const productDoc = await Product.findByIdAndUpdate(id,{
       title,
       description,
@@ -149,7 +141,6 @@ async function GET(req: NextRequest) {
     } else {
       // Fetch all products from the database
       const products = await Product.find().populate('categories');
-      console.log("-------------> api response ---------> ", products)
       // Return the products in the response
       return NextResponse.json({ message: 'Products fetched successfully', products }, { status: 200 });
     }

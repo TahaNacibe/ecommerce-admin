@@ -35,10 +35,8 @@ export default function ProductMainPage() {
     })
     
     useEffect(() => {
-        console.log("------------> start fetching")
         axios.get("/api/products").then((respond) => {
             if (respond) {
-                console.log("products", respond)
                 setProducts(respond.data.products)
             }
         })
@@ -46,7 +44,6 @@ export default function ProductMainPage() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        console.log('Search submitted:', searchValue);
       };
     
       const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
