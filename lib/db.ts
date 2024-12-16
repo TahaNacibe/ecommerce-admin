@@ -1,4 +1,6 @@
 import { MongoClient, ServerApiVersion } from "mongodb"
+import { Category } from "@/app/models/category_model";
+import { Product } from "@/app/models/products_model";
  
 if (!process.env.MONGODB_URI) {
   throw new Error('Invalid/Missing environment variable: "MONGODB_URI"')

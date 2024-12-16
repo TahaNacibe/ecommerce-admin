@@ -127,12 +127,11 @@ export default function SettingsPage() {
   );
 
   // Loading state UI
-  if (initialLoading) {
+  const LoadingWidget = () => {
     return (
-      <div className="h-screen flex items-center justify-center bg-gray-50">
-        <div className="space-y-4 text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-500 border-t-transparent mx-auto"></div>
-          <p className="text-gray-600">Loading settings...</p>
+      <div className="h-screen flex items-center justify-center justify-items-center bg-gray-50 w-screen">
+        <div className="space-y-4 text-center items-center justify-center justify-items-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent mx-auto"></div>
         </div>
       </div>
     );
@@ -163,7 +162,7 @@ export default function SettingsPage() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 ml-0 md:ml-20 p-8 overflow-auto">
+      {initialLoading? <LoadingWidget /> : <div className="flex-1 ml-0 md:ml-20 p-8 overflow-auto">
         <div className="max-w-7xl mx-auto space-y-8">
           {/* Shop Settings Section */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 transition-shadow hover:shadow-md">
@@ -336,7 +335,7 @@ export default function SettingsPage() {
                 </table>
               </div>
             </div>
-          </div>
+          </div>}
         </div>
   );
 }

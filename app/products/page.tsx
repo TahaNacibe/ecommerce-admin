@@ -2,7 +2,7 @@
 import Link from "next/link"
 import SideBar from "../pages/components/sideBar"
 import { useEffect, useState } from "react"
-import { Search } from "lucide-react"
+import { Loader2, Search } from "lucide-react"
 import axios from "axios"
 import ProductsTable from "./components/tableOfItems"
 import ProductType from "../models/product_interface"
@@ -15,6 +15,7 @@ export default function ProductMainPage() {
     {/* vars */ }
     const filterOptionsCount: Array<string> = ["out of stock", "in stock", "unlimited"]
     const filterOptionsType: Array<string> = ["digital", "physical"]
+    const loadingMessage: string = "Preparing your Products List ...";
     type FilterType = keyof FilterListInterFace;
     interface FilterListInterFace{
         count: string[]
@@ -172,13 +173,22 @@ export default function ProductMainPage() {
         setIsFilter(!isFilter)
     }
 
+    // Loading Spinner Component
+const LoadingSpinner = ({ size = 'small' }: { size?: 'small' | 'large' }) => (
+    <Loader2 
+      className={`animate-spin ${
+        size === 'large' ? 'h-8 w-8' : 'h-4 w-4'
+      } text-blue-600`} 
+    />
+  );
+
     const session = useSession()
     {/* in case of unauthenticated access break his back */ }
     if (session.status === "loading") {
-        return 
+        return;
     }
     if (session.status === "unauthenticated") {
-        return (<UnauthenticatedPage />)
+        return (<UnauthenticatedPage />);
     }
 
     return (
@@ -231,9 +241,12 @@ export default function ProductMainPage() {
                         </div>
                     </div>
                     {products ? <ProductsTable products={products} searchQuery={searchValue} filters={filterLists} />
-                : <h1>Loading ...</h1>    
+                        : <div className="justify-center items-center justify-items-center pt-28">
+                            <h1 className="text-xl font-medium flex"><LoadingSpinner /> </h1> 
+                </div>  
                 }
-                    
+                
+                
                 </div>
             </div>
         </section>

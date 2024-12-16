@@ -1,6 +1,6 @@
 "use client"
 import CustomInput from "@/app/components/costume_input";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Plus, X } from "lucide-react";
 import SideBar from "@/app/pages/components/sideBar";
@@ -42,6 +42,9 @@ export default function NewProductPage() {
         image: "",
         tags: [],
     }
+
+    let productPage: HTMLElement | null;
+    const productPageRef = useRef<HTMLElement | null>(null);
     //* max number of images
       const MAX_IMAGES = 5
 
@@ -121,7 +124,14 @@ export default function NewProductPage() {
     // Modified addProduct function to ensure proper data flow
 const addProduct = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+    if (productPageRef.current) {
+        productPageRef.current.scrollTo({
+          behavior: "smooth",
+          top: 0,
+        });
+      } else {
+        console.error("Product page ref is null.");
+      }
     if (formData.title === "" || formData.price === "") {
         setErrorStack(formData.title === "" ? "Title is required for products!" : "A price is needed");
         return;
@@ -301,13 +311,16 @@ const addProduct = async (e: React.FormEvent) => {
 
     {/* the ui tree */}
     return (
-        <section className="bg-white w-full min-h-screen flex flex-row h-screen overflow-hidden">
+        <section
+            className="bg-white w-full min-h-screen flex flex-row h-screen overflow-hidden">
             {/* side bar */}
             <SideBar />
 
 
             {/* page ui */}
-            <div className="w-full min-h-screen flex flex-col p-4 overflow-y-auto flex-1">
+            <section
+                ref={productPageRef}
+                className="w-full min-h-screen flex flex-col p-4 overflow-y-auto flex-1 scrollPage">
             {/* section title */}
             <nav className="text-black flex flex-row gap-2">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6 mt-1">
@@ -618,7 +631,7 @@ const addProduct = async (e: React.FormEvent) => {
                     </button>
                 </div>
             </form>
-            </div>
+            </section>
         </section>
     );
 }

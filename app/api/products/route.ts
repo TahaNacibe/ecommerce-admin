@@ -3,6 +3,7 @@ import { authOptions } from '@/lib/authOptions';
 import mongooseConnect from '@/lib/mongoose';
 import { getServerSession } from 'next-auth';
 import { NextRequest, NextResponse } from 'next/server';
+import { Category } from '@/app/models/category_model';
 
 async function POST(req: NextRequest) {
   try {
@@ -131,9 +132,9 @@ async function GET(req: NextRequest) {
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
+    Category.call(null)
     //* getting the actual data
     await mongooseConnect();  // Make sure the database is connected
-
     const id = req.nextUrl.searchParams.get('id');
     if (id) {
       const product = await Product.findById(id)

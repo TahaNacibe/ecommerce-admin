@@ -4,6 +4,7 @@ import SideBar from "../pages/components/sideBar";
 import UnauthenticatedPage from "../unauthorized/page";
 import { useEffect, useState } from "react";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 interface LineItem {
     price_data: {
@@ -46,6 +47,16 @@ export default function OrderMainPage() {
 
         getOrdersForTheAdmin()
     }, [])
+
+     // Loading Spinner Component
+     const LoadingSpinner = ({ size = 'small' }: { size?: 'small' | 'large' }) => (
+        <Loader2 
+        className={`animate-spin ${
+            size === 'large' ? 'h-8 w-8' : 'h-4 w-4'
+        } text-blue-600`} 
+        />
+    );
+
     const session = useSession()
     if (session.status === "loading") {
         return
@@ -59,7 +70,7 @@ export default function OrderMainPage() {
             <SideBar />
             {/* page ui - wrapper with fixed height and scroll */}
             <div className="flex-1 overflow-hidden">
-                {ordersData && ordersData.length > 0 ? <AdminOrdersTable orders={ordersData} /> : <div>No orders found</div>}
+                {ordersData && ordersData.length > 0 ? <AdminOrdersTable orders={ordersData} /> : <div className="justify-center items-center justify-items-center pt-40"><LoadingSpinner /></div>}
             </div>
         </div>
     )

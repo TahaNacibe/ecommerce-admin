@@ -1,6 +1,6 @@
 "use client"
 import { signIn, useSession } from 'next-auth/react';
-import { Plus } from 'lucide-react';
+import { Loader2, Plus } from 'lucide-react';
 import React, { useEffect, useState } from 'react';
 import SideBar from './components/sideBar';
 import axios from 'axios';
@@ -68,14 +68,17 @@ export default function ProfilePage() {
     user.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     user.email.toLowerCase().includes(searchTerm.toLowerCase())
   );
+  // Loading Spinner Component
+  const LoadingSpinner = ({ size = 'small' }: { size?: 'small' | 'large' }) => (
+    <div className='flex justify-center items-center justify-items-center h-full w-screen'>
+       <Loader2 
+    className={`animate-spin ${
+        size === 'large' ? 'h-8 w-8' : 'h-4 w-4'
+    } text-blue-600`} 
+    />
+   </div>
+);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-100">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
-      </div>
-    );
-  }
 
   if (!session) {
     return (
@@ -96,7 +99,7 @@ export default function ProfilePage() {
   return (
     <div className="h-screen bg-gray-100 flex overflow-hidden">
       <SideBar />
-      <div className="flex-1 p-8 overflow-auto">
+      {loading? <LoadingSpinner /> : <div className="flex-1 p-8 overflow-auto">
         <div className="max-w-7xl mx-auto">
           {/* Profile Card */}
           <div className="bg-white rounded-xl shadow-md overflow-hidden mb-8">
@@ -227,7 +230,7 @@ export default function ProfilePage() {
             </div>
           </div>
         </div>
-      </div>
+      </div>}
     </div>
   );
 }

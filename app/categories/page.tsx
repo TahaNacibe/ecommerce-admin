@@ -9,6 +9,7 @@ import PropertyType from '../models/property_type';
 import Category from '../models/category_interface';
 import { useSession } from 'next-auth/react';
 import UnauthenticatedPage from '../unauthorized/page';
+import { DeleteConfirmDialog } from '../dialogs/delete_confirm';
 
 // Types
 
@@ -366,21 +367,24 @@ const CategoryItem = ({
                     title="Edit category"
                   >
                     <Pencil className="h-5 w-5" />
-                  </button>
-                  <button
-                    onClick={onDelete}
-                    disabled={loading || category.usedCount > 0 || childCategories.length > 0}
-                    className="p-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
-                    title={
-                      category.usedCount > 0 
-                        ? "Cannot delete category that is in use" 
-                        : childCategories.length > 0
-                          ? "Cannot delete category with subcategories"
-                          : "Delete category"
-                    }
-                  >
-                    {loading ? <LoadingSpinner /> : <Trash2 className="h-5 w-5" />}
-                  </button>
+                    </button>
+                    <DeleteConfirmDialog triggerButton={
+                      <button
+                      // onClick={onDelete}
+                      disabled={loading || category.usedCount > 0 || childCategories.length > 0}
+                      className="p-2 text-red-600 hover:text-red-700 rounded-lg hover:bg-red-50 transition-colors disabled:opacity-50"
+                      title={
+                        category.usedCount > 0 
+                          ? "Cannot delete category that is in use" 
+                          : childCategories.length > 0
+                            ? "Cannot delete category with subcategories"
+                            : "Delete category"
+                      }
+                    >
+                      {loading ? <LoadingSpinner /> : <Trash2 className="h-5 w-5" />}
+                    </button>
+                    } title={'Are You sure?'} description={`are you sure you want to delete "${category.name}" category?`} confirmAction={onDelete} />
+                  
                 </>
               )}
             </div>
@@ -556,10 +560,6 @@ const CategoriesPage = () => {
   };
 
   const handleDelete = async (id: string) => {
-    if (!window.confirm('Are you sure you want to delete this category?')) {
-      return;
-    }
-
     setLoading(true);
     try {
       await axios.delete(`/api/category?id=${id}`);

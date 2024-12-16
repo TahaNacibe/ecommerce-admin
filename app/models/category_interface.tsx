@@ -1,6 +1,6 @@
 import PropertyType from "./property_type";
 
-interface Category {
+interface CategoryInterface {
     _id: string;
     name: string;
     description?: string;
@@ -15,4 +15,4 @@ interface Category {
       ] 
 }
   
-export default Category
+export default CategoryInterface

@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import SideBar from "../pages/components/sideBar";
 import UnauthenticatedPage from "../unauthorized/page";
 import { useEffect, useState } from "react";
-import { Package, Banknote,ClockArrowUp,User } from "lucide-react";
+import { Package, Banknote,ClockArrowUp,User, Loader2 } from "lucide-react";
 import axios from "axios";
 
 interface LineItem {
@@ -114,11 +114,19 @@ const DashboardContent: React.FC<DashboardContentProps> = ({ orders, isLoading }
             day: 'numeric'
         });
     };
+        // Loading Spinner Component
+        const LoadingSpinner = ({ size = 'small' }: { size?: 'small' | 'large' }) => (
+            <Loader2 
+            className={`animate-spin ${
+                size === 'large' ? 'h-8 w-8' : 'h-4 w-4'
+            } text-blue-600`} 
+            />
+        );
 
     if (isLoading) {
         return (
-            <div className="flex-1 p-8">
-                <div className="text-xl">Loading dashboard data...</div>
+            <div className="flex-1 p-8 ">
+                <div className="text-xl flex justify-center items-center justify-items-center h-60"><LoadingSpinner /></div>
             </div>
         );
     }

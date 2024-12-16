@@ -14,6 +14,7 @@ import Link from 'next/link';
 import axios from 'axios';
 import ProductType from '@/app/models/product_interface';
 import Category from '@/app/models/category_interface';
+import { DeleteConfirmDialog } from '@/app/dialogs/delete_confirm';
 
 
 interface FilterListInterFace{
@@ -193,9 +194,8 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
 
   function deleteProduct(id: string, index : number): void {
     try {
-      resultList.splice(index, 1)
       const originalListIndex = products?.findIndex(product => product._id === id)
-      if (originalListIndex) {
+      if (originalListIndex != undefined && originalListIndex > -1) {
         products?.splice(originalListIndex, 1)        
       }
       axios.delete(`/api/products?id=${id}`)
@@ -358,9 +358,14 @@ export default function ProductsTable({ products, filters, searchQuery }: { prod
                               <Link href={`/products/editProduct/${product._id}`} className='inline-flex gap-2 items-center px-4 py-1 rounded-lg text-base bg-blue-50 text-blue-700 whitespace-nowrap'>
                               <PackageOpen /> Edit Product
                               </Link>
-                              <button onClick={() => deleteProduct(product._id, index)} className='inline-flex gap-2 items-center px-4 py-1 rounded-lg text-base bg-red-50 text-red-700 whitespace-nowrap'>
+                              <DeleteConfirmDialog triggerButton={
+                                <button
+                                  onClick={(e) => e.stopPropagation()}
+                                  className='inline-flex gap-2 items-center px-4 py-1 rounded-lg text-base bg-red-50 text-red-700 whitespace-nowrap'>
                               <PackageX /> Remove Product
                               </button>
+                              } title={'Delete Product?'} description={`are you sure you want to delete "${product.title} from your products list?"`}
+                                confirmAction={() => deleteProduct(product._id, index)} />
                             </div>
                           </div>
 
