@@ -1,71 +1,66 @@
-# Ecommerce Admin Panel
+# E-commerce Platform - Admin Panel
 
-This is a comprehensive admin panel for a freelance e-commerce project, built with Next.js, Prisma, MongoDB, NextAuth, Tailwind CSS, and shadcn UI. Designed to provide full control over the e-commerce platform, it combines robust security, detailed inventory management, and user-friendly interfaces to enable efficient business operations. The project is intended as a professional-grade portfolio piece to showcase expertise in full-stack web development, database management, and modern authentication strategies.
-
----
+A comprehensive admin dashboard for managing e-commerce operations, featuring secure role-based access controls and complete business management tools.
 
 ## Features
 
-- **Role-Based Security**: Admin, manager, and staff roles with fine-grained permissions to access specific parts of the panel.
-- **Session Management**: Secure authentication and session tracking with NextAuth, including token handling and expiration.
-- **Stock Management**: Monitor, update, and manage product inventory in real-time, with low-stock alerts.
-- **Orders Monitoring**: Track incoming and processed orders, generate reports, and manage shipping statuses.
-- **Recipe Generation**: For products that require compositional data, create and manage recipes with dynamic inputs.
-- **Category and Product Management**: Add, edit, and organize product categories, as well as detailed product attributes, descriptions, and media.
-- **Interactive Dashboard**: Visual analytics, charts, and quick action panels to manage day-to-day operations efficiently.
-- **Responsive Design**: Built with Tailwind CSS and shadcn UI for clean, consistent styling across devices.
-- **Data Validation and Error Handling**: Ensures integrity of stock, orders, and product information.
-- **Portfolio Showcase**: Demonstrates full-stack development skills, modern JS frameworks, database modeling with Prisma, authentication flows, and UI/UX design.
+- **Product Management** - Create, edit, delete, and organize product inventory
+- **Category Control** - Manage product categories and hierarchies  
+- **Order Management** - Process, track, and fulfill customer orders
+- **User Administration** - Monitor user accounts and manage permissions
+- **Analytics Dashboard** - View sales metrics, revenue, and performance data
+- **Payment Tracking** - Monitor Stripe transactions and payment status
+- **Inventory Control** - Track stock levels and manage product availability
+- **Content Management** - Update site content and promotional materials
 
----
+## Security Features
 
-## Technologies Used
+- **Role-based Authentication** - Multi-level admin access controls
+- **Protected Routes** - Secure access to admin-only functionality  
+- **JWT Authorization** - Token-based session management
+- **Audit Logging** - Track admin actions and system changes
+- **Data Validation** - Comprehensive input sanitization and validation
+- **Session Management** - Automatic logout and session timeout
 
-- **Frontend:** Next.js, Tailwind CSS, shadcn UI, TypeScript
-- **Backend:** Prisma ORM, MongoDB
-- **Authentication:** NextAuth
-- **Other Tools:** Node.js, REST API endpoints, session handling, JWT tokens
+## Admin Roles
 
----
+- **Super Admin** - Full system access and user management
+- **Admin** - Product and order management capabilities
+- **Moderator** - Limited access to content and basic operations
 
-## Getting Started
+## Tech Stack
 
-### Prerequisites
+- **Frontend**: React, TypeScript, Tailwind CSS
+- **State Management**: Redux Toolkit  
+- **Authentication**: JWT with role-based permissions
+- **Charts**: Chart.js for analytics visualization
+- **Data Tables**: Advanced filtering and pagination
+- **File Upload**: Secure image and document handling
 
-- Node.js installed on your machine.
-- MongoDB instance or connection string.
-
-### Installation
-
-1. Clone the repository:
+## Setup
 
 ```bash
-git clone https://github.com/TahaNacibe/ecommerce-admin.git
+# Clone and install
+git clone https://github.com/yourusername/ecommerce-admin.git
 cd ecommerce-admin
-```
-
-2. Install dependencies:
-
-```bash
 npm install
-```
 
-3. Set environment variables:
+# Environment setup
+cp .env.example .env
+# Configure API endpoints and admin credentials
 
-```
-NEXTAUTH_URL=<your-url>
-DATABASE_URL=<your-mongo-url>
-```
-
-4. Run the application:
-
-```bash
+# Start development server
 npm run dev
 ```
 
+## Access Control
+
+The admin panel implements strict role-based access:
+- Authentication required for all routes
+- Role verification for sensitive operations
+- Automatic redirect for unauthorized access
+- Session monitoring and security logging
+
 ---
 
-## License
-
-MIT License - see [LICENSE](LICENSE).
-
+*A portfolio project showcasing complex admin dashboard development with role-based security, data management, and business analytics.*
