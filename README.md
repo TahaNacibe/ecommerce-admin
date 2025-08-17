@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Ecommerce Admin Panel
+
+This is a comprehensive admin panel for a freelance e-commerce project, built with Next.js, Prisma, MongoDB, NextAuth, Tailwind CSS, and shadcn UI. Designed to provide full control over the e-commerce platform, it combines robust security, detailed inventory management, and user-friendly interfaces to enable efficient business operations. The project is intended as a professional-grade portfolio piece to showcase expertise in full-stack web development, database management, and modern authentication strategies.
+
+---
+
+## Features
+
+- **Role-Based Security**: Admin, manager, and staff roles with fine-grained permissions to access specific parts of the panel.
+- **Session Management**: Secure authentication and session tracking with NextAuth, including token handling and expiration.
+- **Stock Management**: Monitor, update, and manage product inventory in real-time, with low-stock alerts.
+- **Orders Monitoring**: Track incoming and processed orders, generate reports, and manage shipping statuses.
+- **Recipe Generation**: For products that require compositional data, create and manage recipes with dynamic inputs.
+- **Category and Product Management**: Add, edit, and organize product categories, as well as detailed product attributes, descriptions, and media.
+- **Interactive Dashboard**: Visual analytics, charts, and quick action panels to manage day-to-day operations efficiently.
+- **Responsive Design**: Built with Tailwind CSS and shadcn UI for clean, consistent styling across devices.
+- **Data Validation and Error Handling**: Ensures integrity of stock, orders, and product information.
+- **Portfolio Showcase**: Demonstrates full-stack development skills, modern JS frameworks, database modeling with Prisma, authentication flows, and UI/UX design.
+
+---
+
+## Technologies Used
+
+- **Frontend:** Next.js, Tailwind CSS, shadcn UI, TypeScript
+- **Backend:** Prisma ORM, MongoDB
+- **Authentication:** NextAuth
+- **Other Tools:** Node.js, REST API endpoints, session handling, JWT tokens
+
+---
 
 ## Getting Started
 
-First, run the development server:
+### Prerequisites
+
+- Node.js installed on your machine.
+- MongoDB instance or connection string.
+
+### Installation
+
+1. Clone the repository:
+
+```bash
+git clone https://github.com/TahaNacibe/ecommerce-admin.git
+cd ecommerce-admin
+```
+
+2. Install dependencies:
+
+```bash
+npm install
+```
+
+3. Set environment variables:
+
+```
+NEXTAUTH_URL=<your-url>
+DATABASE_URL=<your-mongo-url>
+```
+
+4. Run the application:
 
 ```bash
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+MIT License - see [LICENSE](LICENSE).
 
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
